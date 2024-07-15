@@ -7,7 +7,9 @@ from ..database import get_db
 
 
 # Initialise App Router
-router = APIRouter()
+router = APIRouter(
+    tags=["Post"]
+)
 
 
 # Reading All...

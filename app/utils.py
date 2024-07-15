@@ -11,12 +11,14 @@ def hash_pwd (password:str) -> str:
 
 
 # Verify hash
-def verify_pwd(password:str):
-    pass 
+def verify_pwd(password:str, hashed_password:str) -> bool: 
+    return pwd_context.verify(password, hashed_password)
 
 
 # Error Message:
 def id_error(resoure:str, id:int):
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                        detail=f"{resoure} with id: {id} was not found"
-    )
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{resoure} with id: {id} was not found")
+
+
+def invalid_credentials():
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Credentials")
