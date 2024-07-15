@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from psycopg2.extras import RealDictCursor
 from fastapi import FastAPI, Response, status, HTTPException, Depends
 
-from . import models, schemas
+from . import models, schemas, utils
 from .database import engine, get_db
 
 models.Base.metadata.create_all(bind=engine)
@@ -91,6 +91,9 @@ def update_post(id:int, updated_post:schemas.PostBase, db:Session=Depends(get_db
 # Creating User
 @app.post("/create-user", status_code=status.HTTP_201_CREATED, response_model=schemas.UserResponse)
 def create_users(user:schemas.UserCreate, db: Session = Depends(get_db)):
+
+    # hashing pwd - user.password
+    user.password = utils.hash_pwd(user.password) 
 
     new_user = models.User(**user.model_dump())
     db.add(new_user)
