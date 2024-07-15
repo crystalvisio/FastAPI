@@ -47,15 +47,15 @@ def get_post(id:int, response:Response, db: Session = Depends(get_db)):
 
 
 # Creating...
-@app.post("/create-post", status_code=status.HTTP_201_CREATED, response_model=schemas.Response)
+@app.post("/create-post", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
 def create_posts(post:schemas.PostBase, db: Session = Depends(get_db)):
 
     new_post = models.Post(**post.model_dump())
     db.add(new_post)
     db.commit()
-    db.refresh(new_post)
+    db.refresh(new_post) # return new post
 
-    return {"Data": new_post}
+    return new_post
 
 
 # Deleting...
@@ -87,3 +87,14 @@ def update_post(id:int, updated_post:schemas.PostBase, db:Session=Depends(get_db
 
     return {"Updated Post":post.first()}
 
+
+# Creating User
+@app.post("/create-user", status_code=status.HTTP_201_CREATED, response_model=schemas.UserResponse)
+def create_users(user:schemas.UserCreate, db: Session = Depends(get_db)):
+
+    new_user = models.User(**user.model_dump())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user) # return  new user
+
+    return new_user
