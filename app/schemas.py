@@ -25,10 +25,20 @@ class UserCreate(BaseModel):
     password:str
 
 
-class UserResponse(BaseModel):
+class UserOut(BaseModel):
     id:int
     name:str
     email:EmailStr
+    created_at:datetime
+
+
+    class Config:
+        from_attributes = True
+
+
+class UserGet(BaseModel):
+    id:int
+    name:str
     created_at:datetime
 
 
