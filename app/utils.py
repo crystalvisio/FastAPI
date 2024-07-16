@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from passlib.context import CryptContext
 
-# Define hashing algorithm
+# Define hashing ALGORITHMrithm
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 
@@ -17,8 +17,22 @@ def verify_pwd(password:str, hashed_password:str) -> bool:
 
 # Error Message:
 def id_error(resoure:str, id:int):
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{resoure} with id: {id} was not found")
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, 
+        detail=f"{resoure} with id: {id} was not found"
+    )
 
 
 def invalid_credentials():
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Credentials")
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN, 
+        detail="Invalid Credentials"
+    )
+
+
+def credentials_exception():
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED, 
+        details="Could not Validate Credentials", 
+        header={"WWW-Authenticate":"Bearer"}
+    )
