@@ -14,19 +14,20 @@ router = APIRouter(
 
 # Reading All...
 @router.get("/post", response_model=List[schemas.PostBase])
-def get_posts(db: Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
+def read_all(db: Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
     posts = db.query(models.Post).all()
-    return {"data": posts}
+    return posts
 
 
 # Reading One...
 @router.get("/get-post/{id}")
-def get_post(id:int, response:Response, db: Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
+def read_one(id:int, db: Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
     post = db.query(models.Post).filter(models.Post.id==id).first()
 
     if not post:
         utils.id_error("Post", id)
+    
     return {"Post_details":post}
 
 
@@ -34,7 +35,9 @@ def get_post(id:int, response:Response, db: Session = Depends(get_db), curr_user
 @router.post("/create-post", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
 def create_posts(post:schemas.PostBase, db:Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
-    new_post = models.Post(**post.model_dump())
+    print(curr_user.id)
+
+    new_post = models.Post(user_id=curr_user.id, **post.model_dump())
     db.add(new_post)
     db.commit()
     db.refresh(new_post) # return new post
@@ -59,7 +62,7 @@ def delete_post(id:int, db: Session=Depends(get_db), curr_user:int = Depends(oau
 
 # Updating...
 @router.put("/update/{id}")
-def update_post(id:int, updated_post:schemas.PostBase, db:Session=Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
+def update_posts(id:int, updated_post:schemas.PostBase, db:Session=Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
     post = models.Post(**updated_post.model_dump()).filter(models.Post.id==id)
 
@@ -69,4 +72,4 @@ def update_post(id:int, updated_post:schemas.PostBase, db:Session=Depends(get_db
     post.update(updated_post.model_dump(), synchronize_session=False)
     db.commit()
 
-    return {"Updated Post":post.first()}
+    return post.first()
