@@ -8,12 +8,13 @@ from ..database import get_db
 
 # Initialise App Router
 router = APIRouter(
+    prefix="/post",
     tags=["Post"]
 )
 
 
 # Reading All...
-@router.get("/post", response_model=List[schemas.PostResponse])
+@router.get("/", response_model=List[schemas.PostResponse])
 def read_all(
     db: Session = Depends(get_db), 
     curr_user:int = Depends(oauth2.get_current_user),
@@ -34,7 +35,7 @@ def read_all(
 
 
 # Reading One...
-@router.get("/get-post/{id}", response_model=schemas.PostResponse)
+@router.get("/{id}", response_model=schemas.PostResponse)
 def read_one(id:int, db: Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
     post = db.query(models.Post).filter(models.Post.id==id).first()
@@ -46,7 +47,7 @@ def read_one(id:int, db: Session = Depends(get_db), curr_user:int = Depends(oaut
 
 
 # Creating...
-@router.post("/create-post", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
 def create_posts(post:schemas.PostBase, db:Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
     print(curr_user.id)
@@ -60,7 +61,7 @@ def create_posts(post:schemas.PostBase, db:Session = Depends(get_db), curr_user:
 
 
 # Deleting...
-@router.delete("/delete/{id}")
+@router.delete("/{id}")
 def delete_post(id:int, db: Session=Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
     post = db.query(models.Post).filter(models.Post.id==id)
@@ -75,7 +76,7 @@ def delete_post(id:int, db: Session=Depends(get_db), curr_user:int = Depends(oau
 
 
 # Updating...
-@router.put("/update/{id}")
+@router.put("/{id}")
 def update_posts(id:int, updated_post:schemas.PostBase, db:Session=Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
     post = models.Post(**updated_post.model_dump()).filter(models.Post.id==id)

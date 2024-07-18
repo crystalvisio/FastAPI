@@ -7,12 +7,13 @@ from ..database import get_db
 
 # Initialise App Router
 router = APIRouter(
+    prefix="/user",
     tags=["User"]
 )
 
 
 # Creating User
-@router.post("/create-user", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
 def create_users(user:schemas.UserCreate, db: Session = Depends(get_db)):
 
     # hashing pwd - user.password
@@ -27,7 +28,7 @@ def create_users(user:schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 # Getting User by id
-@router.get("/get-user/{id}", response_model=schemas.UserGet)
+@router.get("/{id}", response_model=schemas.UserGet)
 def get_post(id:int, db: Session = Depends(get_db)):
 
     user = db.query(models.User).filter(models.User.id==id).first()
