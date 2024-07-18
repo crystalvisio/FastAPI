@@ -10,12 +10,23 @@ class PostBase(BaseModel):
     # created_at: datetime
 
 
+class UserOut(BaseModel):
+    id:int
+    name:str
+    email:EmailStr
+    created_at:datetime
+
+    class Config:
+        from_attributes = True
+
+
 class PostResponse(BaseModel):
     title:str
     content:str
     published:bool
     created_at:datetime
     user_id:int
+    user:UserOut
 
     class Config:
         from_attributes = True
@@ -25,17 +36,6 @@ class UserCreate(BaseModel):
     name:str 
     email:EmailStr
     password:str
-
-
-class UserOut(BaseModel):
-    id:int
-    name:str
-    email:EmailStr
-    created_at:datetime
-
-
-    class Config:
-        from_attributes = True
 
 
 class UserGet(BaseModel):

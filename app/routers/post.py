@@ -1,5 +1,5 @@
-from fastapi import Response, status, Depends, APIRouter
-from typing import List
+from fastapi import Response, status, Depends, APIRouter, HTTPException
+from typing import List, Optional
 from sqlalchemy.orm import Session
 
 from .. import models, schemas, utils, oauth2
@@ -13,14 +13,28 @@ router = APIRouter(
 
 
 # Reading All...
-@router.get("/post", response_model=List[schemas.PostBase])
-def read_all(db: Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
-    posts = db.query(models.Post).all()
+@router.get("/post", response_model=List[schemas.PostResponse])
+def read_all(
+    db: Session = Depends(get_db), 
+    curr_user:int = Depends(oauth2.get_current_user),
+    limit:int = 10, 
+    skip:int = 0, 
+    search:Optional[str] = ""
+    ):
+
+    posts = db.query(models.Post).filter(models.Post.content.ilike(f"%{search}%")).limit(limit).offset(skip).all()
+
+    if not posts:
+        raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, 
+        detail="Post(s) Not Found!"
+    )
+
     return posts
 
 
 # Reading One...
-@router.get("/get-post/{id}")
+@router.get("/get-post/{id}", response_model=schemas.PostResponse)
 def read_one(id:int, db: Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
     post = db.query(models.Post).filter(models.Post.id==id).first()
@@ -28,7 +42,7 @@ def read_one(id:int, db: Session = Depends(get_db), curr_user:int = Depends(oaut
     if not post:
         utils.id_error("Post", id)
     
-    return {"Post_details":post}
+    return post
 
 
 # Creating...
