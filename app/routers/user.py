@@ -29,7 +29,7 @@ def create_users(user:schemas.UserCreate, db: Session = Depends(get_db)):
 
 # Getting User by id
 @router.get("/{id}", response_model=schemas.UserGet)
-def get_post(id:int, db: Session = Depends(get_db)):
+def get_users(id:int, db: Session = Depends(get_db)):
 
     user = db.query(models.User).filter(models.User.id==id).first()
 
