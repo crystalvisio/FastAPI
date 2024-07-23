@@ -13,7 +13,7 @@ router = APIRouter(
 
 
 # Creating User
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.UserBase)
 def create_users(user:schemas.UserCreate, db: Session = Depends(get_db)):
 
     # hashing pwd - user.password
@@ -32,6 +32,8 @@ def create_users(user:schemas.UserCreate, db: Session = Depends(get_db)):
 def get_users(id:int, db: Session = Depends(get_db)):
 
     user = db.query(models.User).filter(models.User.id==id).first()
+
+    print(user.id)
 
     if not user:
         utils.id_error("User", id)

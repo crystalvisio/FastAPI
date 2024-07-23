@@ -1,6 +1,7 @@
 from fastapi import Response, status, Depends, APIRouter, HTTPException
 from typing import List, Optional
 from sqlalchemy.orm import Session
+from sqlalchemy import case, func
 
 from .. import models, schemas, utils, oauth2
 from ..database import get_db
@@ -14,7 +15,7 @@ router = APIRouter(
 
 
 # Reading All...
-@router.get("/", response_model=List[schemas.PostResponse])
+@router.get("/", response_model=List[schemas.PostOut])
 def read_all(
     db: Session = Depends(get_db), 
     curr_user:int = Depends(oauth2.get_current_user),
@@ -23,7 +24,21 @@ def read_all(
     search:Optional[str] = ""
     ):
 
-    posts = db.query(models.Post).filter(models.Post.content.ilike(f"%{search}%")).limit(limit).offset(skip).all()
+    # Get All Posts and the total downvotes and upvotes
+
+    #   SELECT posts.*, 
+    #       COUNT(votes.post_id) FILTER (WHERE votes.vote_dir = 1) AS upvotes,
+    #       COUNT(votes.post_id) FILTER (WHERE votes.vote_dir = 0) AS downvotes
+    #   FROM posts 
+    #   LEFT JOIN votes ON posts.id = votes.post_id 
+    #   GROUP BY posts.id;
+
+    posts = db.query(
+        models.Post,
+        func.count(case(((models.Vote.vote_dir == 1, 1)))).label("upvotes"),
+        func.count(case(((models.Vote.vote_dir == 0, 1)))).label("downvotes")
+    ).outerjoin(models.Vote, models.Vote.post_id == models.Post.id).group_by(models.Post.id).filter(
+        models.Post.content.ilike(f"%{search}%")).limit(limit).offset(skip).all()
 
     if not posts:
         raise HTTPException(
@@ -35,10 +50,14 @@ def read_all(
 
 
 # Reading One...
-@router.get("/{id}", response_model=schemas.PostResponse)
+@router.get("/{id}", response_model=schemas.PostOut)
 def read_one(id:int, db: Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
-    post = db.query(models.Post).filter(models.Post.id==id).first()
+    post = db.query(
+        models.Post,
+        func.count(case(((models.Vote.vote_dir == 1, 1)))).label("upvotes"),
+        func.count(case(((models.Vote.vote_dir == 0, 1)))).label("downvotes")
+    ).outerjoin(models.Vote, models.Vote.post_id == models.Post.id).group_by(models.Post.id).filter(models.Post.id == id).first()
 
     if not post:
         utils.id_error("Post", id)
@@ -48,9 +67,7 @@ def read_one(id:int, db: Session = Depends(get_db), curr_user:int = Depends(oaut
 
 # Creating...
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
-def create_posts(post:schemas.PostBase, db:Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
-
-    print(curr_user.id)
+def create_posts(post:schemas.PostCreate, db:Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
     new_post = models.Post(user_id=curr_user.id, **post.model_dump())
     db.add(new_post)

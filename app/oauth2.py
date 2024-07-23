@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from . import schemas, utils, database, models
-from .config import settings 
+from .config import settings
 
 SECRET_KEY = settings.secret_key
 ALGORITHM = settings.algorithm
@@ -33,13 +33,13 @@ def verify_access_token(token: str):
         user_id: str = payload.get("user_id")
 
         if user_id is None:
-            raise utils.credentials_exception
+            raise utils.credentials_exception()
 
         token_data = schemas.TokenData(id=str(user_id))
         return token_data
 
-    except JWTError as e:
-        raise utils.credentials_exception from e
+    except JWTError:
+        raise utils.credentials_exception()
 
 
 def get_current_user(token:str = Depends(oauth2_scheme), db:Session=Depends(database.get_db)):
@@ -50,5 +50,5 @@ def get_current_user(token:str = Depends(oauth2_scheme), db:Session=Depends(data
 
     if curr_user is None:
         raise utils.id_error("Post", curr_user.id)
-    
+
     return curr_user

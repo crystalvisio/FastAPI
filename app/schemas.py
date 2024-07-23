@@ -3,14 +3,8 @@ from datetime import datetime
 from typing import Optional 
 
 
-class PostBase(BaseModel):
-    title:str
-    content:str
-    published:bool 
-    # created_at: datetime
-
-
-class UserOut(BaseModel):
+# Create New User Response Model Schema
+class UserBase(BaseModel):
     id:int
     name:str
     email:EmailStr
@@ -20,24 +14,48 @@ class UserOut(BaseModel):
         from_attributes = True
 
 
-class PostResponse(BaseModel):
-    title:str
-    content:str
-    published:bool
-    created_at:datetime
-    user_id:int
-    user:UserOut
+# Default Post Schema without `id` and `user` for creation
+class PostBase(BaseModel):
+    title: str
+    content: str
+    published: bool = True
+    
+    class Config:
+        from_attributes = True
+
+
+# Schema for response which includes `id` and `user`
+class PostResponse(PostBase):
+    id: int
+    user: UserBase
 
     class Config:
         from_attributes = True
 
 
+# Schema for response which includes upvotes and downvotes
+class PostOut(BaseModel):
+    Post: PostResponse
+    upvotes: int
+    downvotes: int
+
+    class Config:
+        from_attributes = True
+
+
+# Schema for creating a post
+class PostCreate(PostBase):
+    pass
+
+
+# Create New User Schema
 class UserCreate(BaseModel):
     name:str 
     email:EmailStr
     password:str
 
 
+# Get Users Schema
 class UserGet(BaseModel):
     id:int
     name:str
@@ -48,20 +66,24 @@ class UserGet(BaseModel):
         from_attributes = True
 
 
+# Login Schema
 class UserLogin(BaseModel):
-    email:EmailStr
-    password:str
+    email: EmailStr
+    password: str
 
 
+# Token Response Schema
 class Token(BaseModel):
-    access_token:str
-    token_type:str
+    access_token: str
+    token_type: str
 
 
+# Token Data Schema (Add more info if you wanna add more to the signature header)
 class TokenData(BaseModel):
-    id:Optional[str] = None
+    id: Optional[str] = None
 
 
+# Votes Schema
 class Vote(BaseModel):
     post_id:int
-    vote_dir:conint(ge=0, le=1)  # Ensures vote_dir is 0 or 1
+    vote_dir:conint(ge=0, le=1)  # type: ignore # Ensures vote_vote_dir is 0 or 1
