@@ -33,8 +33,6 @@ def get_users(id:int, db: Session = Depends(get_db)):
 
     user = db.query(models.User).filter(models.User.id==id).first()
 
-    print(user.id)
-
     if not user:
         utils.id_error("User", id)
 

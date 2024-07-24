@@ -16,7 +16,7 @@ class Post(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     user = relationship("User", back_populates="posts")
-    votes = relationship("Vote", back_populates="post")
+    votes = relationship("Vote", back_populates="posts")
 
 
 class User(Base):
