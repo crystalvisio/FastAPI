@@ -1,6 +1,7 @@
 # Import Dependencies
 from sqlalchemy.orm import Session
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from . import models, database
 from .routers import post, user, auth, vote
@@ -10,6 +11,19 @@ from .routers import post, user, auth, vote
 
 # Initialize Fast API app
 app = FastAPI()
+
+# Set Up CORS
+origins = [
+    "*",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 # Initialize app routers
 app.include_router(post.router)

@@ -77,18 +77,23 @@ This repository is a practice project to learn and demonstrate how to create API
 FastAPI/
 ├── alembic/                     # Alembic configuration and migration scripts
 │   ├── versions/                # Migration versions
+|   |
 ├── app/                         # Application source code
-│   ├── __init__.py
+|   |
 │   ├── routers/                 # API route definitions
 │   │   ├── auth.py              # Authentication routes
 │   │   ├── post.py              # Post-related routes
 │   │   └── user.py              # User-related routes
+|   |
+│   ├── __init__.py
+│   ├── config.py                # Pydantic Basic Settings (Import env variables)
+│   ├── database.py              # Database connection setup
 │   ├── main.py                  # FastAPI application instance
 │   ├── models.py                # SQLAlchemy models
+│   ├── oauth2.py                # Authentication (JWT) handling
 │   ├── schemas.py               # Pydantic models (schemas)
-│   ├── database.py              # Database connection setup
-│   ├── oauth.py                 # Authentication (JWT) handling
 │   ├── utils.py                 # Utility functions (error handling, password management)
+|
 ├── .env                         # Environment variables
 ├── .gitignore
 ├── alembic.ini                  # Alembic configuration file
