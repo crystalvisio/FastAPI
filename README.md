@@ -97,6 +97,7 @@ FastAPI/
 ├── .env                         # Environment variables
 ├── .gitignore
 ├── alembic.ini                  # Alembic configuration file
+├── Procfile
 ├── requirements.txt             # Python dependencies
 └── README.md                    # Project README file
 ```
