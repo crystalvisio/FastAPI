@@ -38,11 +38,7 @@ This repository is a practice project to learn and demonstrate how to create API
 4. **Create a `.env` file with your database information:**
 
    ```env
-   DB_NAME=<your_database_password>
-   B_PASSWORD=<your_database_password>
-   DB_USER=<your_user>
-   DB_HOST=<your_host>
-   DB_PORT=<your_port_number>
+   DATABASE_URL=postgresql+<db_adapter>://<db_username>:<db_password>@<db_host>:<db_port>/<db_name> # db_adapter is optional with psycopg2
    SECRET_KEY=<your_secret_key>
    ALGORITHM=HS256
    ACCESS_TOKEN_EXPIRE_MINUTES=30 # specify the timeframe you want
