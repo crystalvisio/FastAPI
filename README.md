@@ -41,7 +41,7 @@ This repository is a practice project to learn and demonstrate how to create API
    DATABASE_URL=postgresql+<db_adapter>://<db_username>:<db_password>@<db_host>:<db_port>/<db_name> # db_adapter is optional with psycopg2
    SECRET_KEY=<your_secret_key>
    ALGORITHM=HS256
-   ACCESS_TOKEN_EXPIRE_MINUTES=30 # specify the timeframe you want
+   ACCESS_TOKEN_EXPIRE_MINS=30 # specify the timeframe you want
    ```
 
 5. **Set up the database:**
