@@ -46,16 +46,7 @@ This repository is a practice project to learn and demonstrate how to create API
 
 5. **Set up the database:**
 
-   Initial Alembic set up
-
    ```bash
-   alembic init alembic
-   ```
-
-   Run the following command to apply migrations and set up the database schema:
-
-   ```bash
-   alembic revision --autogenerate -m "Initial Migration"
    alembic upgrade head
    ```
 
