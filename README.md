@@ -85,6 +85,7 @@ FastAPI/
 ├── .gitignore
 ├── alembic.ini                  # Alembic configuration file
 ├── Procfile
+├── gunicorn.service
 ├── requirements.txt             # Python dependencies
 └── README.md                    # Project README file
 ```

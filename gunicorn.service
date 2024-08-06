@@ -6,8 +6,9 @@ After=network.target
 User=<your_user>
 Group=<your_user>
 WorkingDirectory=<path_to_dir>
-Environment="PATH=<path_to_env_file>"
-ExecStart=<path_to_venv_bin> gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0
+Environment="PATH=<path_to_venv_file>"
+EnvironmentFile=<path_to_env>
+ExecStart=<path_to_venv_bin> gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:8000
 
 [Install]
 WantedBy=multi-user.target
