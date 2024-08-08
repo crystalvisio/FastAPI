@@ -1,4 +1,4 @@
-# Use official lightweight version of python.
+# Use official version of python.
 FROM python:3.12.3
 
 # Set the working directory inside the container.
