@@ -1,5 +1,5 @@
 # Use official lightweight version of python.
-FROM python:3.12.3-alpine
+FROM python:3.12.3
 
 # Set the working directory inside the container.
 WORKDIR /src/
