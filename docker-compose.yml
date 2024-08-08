@@ -15,13 +15,12 @@ services:
       - db
     ports:
       - "8000:8000"
-    volumes:
-      - ./app:/src/app:ro
     env_file:
       - ./.env
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    #   - sh
-    #   - -c
+    command:
+      - sh
+      - -c
+      - alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 -- reload
 
 volumes:
   postgres_data:
