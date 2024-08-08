@@ -1,10 +1,10 @@
 from sqlalchemy.orm import relationship
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, TIMESTAMP,  text
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, TIMESTAMP, text
 from sqlalchemy.schema import PrimaryKeyConstraint
 
 from .database import Base
 
- 
+
 class Post(Base):
     __tablename__ = "posts"
 
@@ -16,7 +16,7 @@ class Post(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     user = relationship("User", back_populates="posts")
-    votes = relationship("Vote", back_populates="posts")
+    votes = relationship("Vote", back_populates="post")
 
 
 class User(Base):
@@ -41,4 +41,4 @@ class Vote(Base):
     post = relationship("Post", back_populates="votes")
     user = relationship("User", back_populates="votes")
 
-    __table_args__ = (PrimaryKeyConstraint('post_id', 'user_id'),)
+    __table_args__ = (PrimaryKeyConstraint("post_id", "user_id"),)
