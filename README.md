@@ -38,7 +38,10 @@ This repository is a practice project to learn and demonstrate how to create API
 4. **Create a `.env` file with your database information:**
 
    ```env
-   DATABASE_URL=postgresql+<db_adapter>://<db_username>:<db_password>@<db_host>:<db_port>/<db_name> # db_adapter is optional with psycopg2
+   DB_NAME=<your_dbName>
+   DB_USER=<your_dbUSer>
+   DB_PASSWORD=<your_dbPassword>
+   DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
    SECRET_KEY=<your_secret_key>
    ALGORITHM=HS256
    ACCESS_TOKEN_EXPIRE_MINS=30 # specify the timeframe you want
@@ -64,15 +67,17 @@ This repository is a practice project to learn and demonstrate how to create API
 FastAPI/
 ├── alembic/                     # Alembic configuration and migration scripts
 │   ├── versions/                # Migration versions
-|   |
+│   ├── env.py                   # Environment-specific configuration for Alembic (if used)
+│   └── README.md                # Instructions or notes for Alembic usage (optional)
+│
 ├── app/                         # Application source code
-|   |
 │   ├── routers/                 # API route definitions
 │   │   ├── auth.py              # Authentication routes
 │   │   ├── post.py              # Post-related routes
-│   │   └── user.py              # User-related routes
-|   |
-│   ├── __init__.py
+│   │   ├── user.py              # Post-related routes
+│   │   └── vote.py              # vote-related routes
+│   │
+│   ├── __init__.py              # Initializes the `app` package
 │   ├── config.py                # Pydantic Basic Settings (Import env variables)
 │   ├── database.py              # Database connection setup
 │   ├── main.py                  # FastAPI application instance
@@ -80,13 +85,16 @@ FastAPI/
 │   ├── oauth2.py                # Authentication (JWT) handling
 │   ├── schemas.py               # Pydantic models (schemas)
 │   ├── utils.py                 # Utility functions (error handling, password management)
-|
+│
 ├── .env                         # Environment variables
-├── .gitignore
+├── .gitignore                   # Git ignore file to exclude files and directories from version control
 ├── alembic.ini                  # Alembic configuration file
-├── Procfile
-├── gunicorn.service
+├── Procfile                     # For deploying with platforms like Heroku
+├── gunicorn.service             # Systemd service file for Gunicorn (if used for deployment)
 ├── requirements.txt             # Python dependencies
+├── Dockerfile                   # Dockerfile for containerizing the application
+├── docker-compose.yml           # Docker Compose configuration for multi-container setup
+├── .dockerignore                # Specifies files and directories to ignore in Docker builds
 └── README.md                    # Project README file
 ```
 
