@@ -1,11 +1,18 @@
-FROM python:3.12.3
+# Use official lightweight version of python.
+FROM python:3.12.3-alpine
 
-WORKDIR /usr/src/app
+# Set the working directory inside the container.
+WORKDIR /src/
 
-COPY requirements.txt ./
+# Copy the requirements file into the container at /src/ directory.
+COPY requirements.txt /src/
 
-RUN pip install --no-cache-dir -r requirements.txt
+# Install the required Python packages from requirements.txt.
+RUN pip install --no-cache-dir -r /src/requirements.txt
 
-COPY . .
+# Copy the entire application code into the container.
+COPY . /src/
 
-CMD [ "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port",  "8000" ]
+# Run Alembic migrations to ensure the database schema is up to date,
+# and then start the FastAPI application using Uvicorn.
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
