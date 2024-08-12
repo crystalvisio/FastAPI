@@ -3,8 +3,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import case, func
 
-from .. import models, schemas, utils, oauth2
-from ..database import get_db
+from app import models, schemas, utils, oauth2, database
 
 
 # Initialise App Router
@@ -16,8 +15,8 @@ router = APIRouter(
 
 # Reading All...
 @router.get("/", response_model=List[schemas.PostOut])
-def read_all(
-    db: Session = Depends(get_db), 
+def get_all_posts(
+    db: Session = Depends(database.get_db), 
     curr_user:int = Depends(oauth2.get_current_user),
     limit:int = 10, 
     skip:int = 0, 
@@ -51,7 +50,7 @@ def read_all(
 
 # Reading One...
 @router.get("/{id}", response_model=schemas.PostOut)
-def read_one(id:int, db: Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
+def get_one_post(id:int, db: Session = Depends(database.get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
     post = db.query(
         models.Post,
@@ -67,7 +66,7 @@ def read_one(id:int, db: Session = Depends(get_db), curr_user:int = Depends(oaut
 
 # Creating...
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
-def create_posts(post:schemas.PostCreate, db:Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
+def create_posts(post:schemas.PostCreate, db:Session = Depends(database.get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
     new_post = models.Post(user_id=curr_user.id, **post.model_dump())
     db.add(new_post)
@@ -79,7 +78,7 @@ def create_posts(post:schemas.PostCreate, db:Session = Depends(get_db), curr_use
 
 # Deleting...
 @router.delete("/{id}")
-def delete_post(id:int, db: Session=Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
+def delete_post(id:int, db: Session=Depends(database.get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
     post = db.query(models.Post).filter(models.Post.id==id)
 
@@ -94,7 +93,7 @@ def delete_post(id:int, db: Session=Depends(get_db), curr_user:int = Depends(oau
 
 # Updating...
 @router.put("/{id}")
-def update_posts(id:int, updated_post:schemas.PostBase, db:Session=Depends(get_db), curr_user:int = Depends(oauth2.get_current_user)):
+def edit_posts(id:int, updated_post:schemas.PostBase, db:Session=Depends(database.get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
     post = models.Post(**updated_post.model_dump()).filter(models.Post.id==id)
 

@@ -2,7 +2,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, TIMESTAMP, text
 from sqlalchemy.schema import PrimaryKeyConstraint
 
-from .database import Base
+from app.database import Base
 
 
 class Post(Base):

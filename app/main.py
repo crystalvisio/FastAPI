@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import models, database
-from .routers import post, user, auth, vote
+from app import models, database
+from app.routers import post, user, auth, vote
 
 # models.Base.metadata.create_all(bind=database.engine)
 
