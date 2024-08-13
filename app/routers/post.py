@@ -93,14 +93,19 @@ def delete_post(id:int, db: Session=Depends(database.get_db), curr_user:int = De
 
 # Updating...
 @router.put("/{id}")
-def edit_posts(id:int, updated_post:schemas.PostBase, db:Session=Depends(database.get_db), curr_user:int = Depends(oauth2.get_current_user)):
+def edit_posts(id: int, updated_post: schemas.PostBase, db: Session = Depends(database.get_db), curr_user: int = Depends(oauth2.get_current_user)):
+    post_query = db.query(models.Post).filter(models.Post.id == id)
 
-    post = models.Post(**updated_post.model_dump()).filter(models.Post.id==id)
+    post = post_query.first()
 
-    if post.first() == None:
+    if not post:
         utils.id_error("Post", id)
     
-    post.update(updated_post.model_dump(), synchronize_session=False)
-    db.commit()
+    if post.user_id != curr_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this post")
 
-    return post.first()
+    post_query.update(updated_post.model_dump(), synchronize_session=False)
+    db.commit()
+    updated_post = post_query.first()
+    
+    return updated_post

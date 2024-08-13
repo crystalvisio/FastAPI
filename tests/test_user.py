@@ -2,6 +2,7 @@ import pytest
 from jose import jwt
 from app import schemas, config
 
+
 # Testing Route for Root
 def test_root(client):
     res = client.get("/")
@@ -10,6 +11,7 @@ def test_root(client):
 
     assert res.json().get("message") == "Welcome to FastAPI.com"
     assert res.status_code == 200
+
 
 # Testing Route for Creating New User
 def test_createUser(client):
@@ -21,6 +23,7 @@ def test_createUser(client):
     
     assert new_user.email == "testuser@user.com"
     assert res.status_code == 201
+
 
 # Testing Route for Logging Users
 def test_login(client, test_user):
@@ -38,6 +41,7 @@ def test_login(client, test_user):
     assert _id == test_user["id"]
     assert _tokenData.token_type == "bearer"
     assert res.status_code == 200
+
 
 # Testing Route for Invalid Credentials
 @pytest.mark.parametrize("email, password, statusCode", [
