@@ -66,10 +66,4 @@ def vote(vote: schemas.Vote, db: Session = Depends(database.get_db), curr_user: 
         db.add(new_vote)
         db.commit()
         return {"message": "DownVote Successful"}
-
-    else:
-        # Raise an error if the vote vote_direction is invalid
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid vote vote_direction"
-        )
+    
