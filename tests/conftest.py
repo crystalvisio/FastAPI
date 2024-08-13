@@ -7,15 +7,28 @@ from app import database, main, oauth2, models
 # Fixture to create a test user
 @pytest.fixture
 def test_user(client):
-    test_data = {
+    user_data = {
         "name": "John Doe",
         "email": "johndoe@email.com",
         "password": "johndoe"
     }
-
-    res = client.post("/user", json=test_data)
+    res = client.post("/user", json=user_data)
     new_user = res.json()
-    new_user["password"] = test_data["password"]
+    new_user["password"] = user_data["password"]
+    return new_user
+
+
+# Fixture to create a second test user
+@pytest.fixture
+def demo_user(client):
+    user_data = {
+        "name": "DemoUser",
+        "email": "demouser@email.com",
+        "password": "demouser"
+    }
+    res = client.post("/user", json=user_data)
+    new_user = res.json()
+    new_user["password"] = user_data["password"]
     return new_user
 
 
@@ -24,8 +37,8 @@ def test_user(client):
 def session():
     database.Base.metadata.drop_all(bind=db_test.engine)
     database.Base.metadata.create_all(bind=db_test.engine)
-
-    return next(db_test.get_test_db_session())
+    yield next(db_test.get_test_db_session())
+    db_test.get_test_db_session().close()
 
 
 # Initialize the TestClient with overridden dependency
@@ -59,13 +72,14 @@ def authorize_client(client, demo_token):
 
 # Create Demo Post Fixture
 @pytest.fixture
-def test_create_posts(session, test_user):
+def test_create_posts(session, test_user, demo_user):
     demo_posts = [
         models.Post(title="first_title", content="first_content", user_id=test_user["id"]),
         models.Post(title="2nd_title", content="2nd_content", user_id=test_user["id"]),
-        models.Post(title="3rd_title", content="3rd_content", user_id=test_user["id"])
+        models.Post(title="3rd_title", content="3rd_content", user_id=test_user["id"]),
+        models.Post(title="4th_title", content="4th_content", user_id=demo_user["id"])
     ]
-
+    
     session.add_all(demo_posts)
     session.commit()
 

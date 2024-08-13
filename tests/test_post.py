@@ -1,3 +1,4 @@
+import pytest
 from app import schemas
 
 
@@ -35,7 +36,7 @@ def test_unauthorized_user_get_all_posts(client, test_create_posts):
     assert res.status_code == 401
 
 
-# Testing Route For Unauthorized User Getting One Posts
+# Testing Route For Unauthorized User Getting One Post
 def test_unauthorized_user_get_one_post(client, test_create_posts):
     post_id = test_create_posts[0].id
     res = client.get(f"/post/{post_id}")
@@ -46,15 +47,16 @@ def test_unauthorized_user_get_one_post(client, test_create_posts):
 
 
 # Testing Route for Post Not Found
-def test_post_not_found(authorize_client, test_create_posts):
-    res = authorize_client.get(f"/post/8888888")
+def test_post_not_found(authorize_client):
+    post_id = 9999
+    res = authorize_client.get(f"/post/{post_id}")
     
     assert res.status_code == 404
 
 
 # Testing Route For Creating a Post
 def test_auth_user_create_post(authorize_client):
-    res = authorize_client.post("/post", json = demo_post_data)
+    res = authorize_client.post("/post", json=demo_post_data)
     
     print(res.json())
 
@@ -62,12 +64,12 @@ def test_auth_user_create_post(authorize_client):
 
     assert res.status_code == 201
     assert new_post.title == "Demo Post Title"
-    assert new_post.published == True # Published should default to True if not provided
+    assert new_post.published == True  # Published should default to True if not provided
 
 
-# Testing Route For Unauthorized user creating post
-def test_unautorize_user_create_post(client):
-    res = client.post("/post", json = demo_post_data)
+# Testing Route For Unauthorized User Creating Post
+def test_unauthorized_user_create_post(client):
+    res = client.post("/post", json=demo_post_data)
 
     assert res.status_code == 401
 
@@ -76,7 +78,7 @@ def test_unautorize_user_create_post(client):
 def test_update_post(authorize_client, test_create_posts):
     post_id = test_create_posts[0].id
 
-    res = authorize_client.put(f"/post/{post_id}", json = update_data)
+    res = authorize_client.put(f"/post/{post_id}", json=update_data)
     
     print(res.json())
 
@@ -88,27 +90,60 @@ def test_update_post(authorize_client, test_create_posts):
     assert updated_post.published == False
 
 
-# Testing Route For Unauthorized user updating post
-def test_unauth_user_update_post(client, test_create_posts):
+# Testing Route For Unauthorized User Updating Post
+def test_unauthorized_user_update_post(client, test_create_posts):
     post_id = test_create_posts[0].id
-    res = client.put(f"/post/{post_id}", json = update_data)
+    res = client.put(f"/post/{post_id}", json=update_data)
 
     assert res.status_code == 401
 
 
+# Testing Route For User Can't Update Others Post
+def test_user_cannot_update_others_post(authorize_client, test_create_posts):
+    post_id = test_create_posts[3].id
+    res = authorize_client.put(f"/post/{post_id}", json=update_data)
+    
+    assert res.status_code == 403
+
+
+# Testing Route for Updating Non-Existent Post
+def test_update_non_existent_post(authorize_client):
+    post_id = 9999
+    res = authorize_client.put(f"/post/{post_id}", json=update_data)
+
+    assert res.status_code == 404
+
+
 # Testing Route for Deleting a Post
-def test_del_post(authorize_client, test_create_posts):
+def test_delete_post(authorize_client, test_create_posts):
     post_id = test_create_posts[0].id
     res = authorize_client.delete(f"/post/{post_id}")
 
     assert res.status_code == 204
 
+    post = authorize_client.get(f"/post/{post_id}")
+    assert post.status_code == 404 
 
-# Testing Route For Unauthorized user deleting post
-def test_unauth_user_del_post(client, test_create_posts):
+
+# Testing Route For Unauthorized User Deleting Post
+def test_unauthorized_user_delete_post(client, test_create_posts):
     post_id = test_create_posts[0].id
     res = client.delete(f"/post/{post_id}")
 
     assert res.status_code == 401
 
-    
+
+# Testing Route For User Can't Delete Others Post
+def test_user_cannot_delete_others_post(authorize_client, test_create_posts):
+    post_id = test_create_posts[3].id
+    res = authorize_client.delete(f"/post/{post_id}")
+
+    assert res.status_code == 403
+
+
+# Testing Route for Deleting Non-Existent Post
+def test_delete_non_existent_post(authorize_client):
+    post_id = 9999
+    res = authorize_client.delete(f"/post/{post_id}")
+
+    assert res.status_code == 404

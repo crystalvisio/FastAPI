@@ -80,16 +80,23 @@ def create_posts(post:schemas.PostCreate, db:Session = Depends(database.get_db),
 @router.delete("/{id}")
 def delete_post(id:int, db: Session=Depends(database.get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
-    post = db.query(models.Post).filter(models.Post.id==id)
+    # Query to find the post by its ID
+    post_query = db.query(models.Post).filter(models.Post.id == id)
+    post = post_query.first()
 
-    if post.first() == None:
+    # Check if the post exists
+    if not post:
         utils.id_error("Post", id)
 
-    post.delete(synchronize_session=False)
+    # Check if the current user is the owner of the post
+    if post.user_id != curr_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this post")
+
+    # Delete the post
+    post_query.delete(synchronize_session=False)
     db.commit()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-
 
 # Updating...
 @router.put("/{id}")
