@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     db_user: str
     db_port: str
     db_host: str
+    testdb_url:str
     secret_key: str
     algorithm: str
     access_token_expire_mins: int
