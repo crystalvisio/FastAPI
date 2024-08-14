@@ -1,6 +1,6 @@
-name: Build and Deploy Code Update
+name: Build and Deploy Code Update!
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
     job1:
