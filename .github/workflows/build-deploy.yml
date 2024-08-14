@@ -64,7 +64,7 @@ jobs:
               uses: docker/build-push-action@v6
               with:
                   push: true
-                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi:github
+                  tags: ${{ secrets.DOCKERHUB_USERNAME }}/fastapi:github
                   cache-from: type=local,src=/tmp/.buildx-cache
                   cache-to: type=local,dest=/tmp/.buildx-cache
 
