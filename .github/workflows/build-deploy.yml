@@ -5,7 +5,11 @@ on: [pull_request, push ]
 jobs:
     job1:
         env:
-            DATABASE_URL: ${{ secrets.DATABASE_URL }}
+            DB_NAME: ${{ secrets.DB_NAME }}
+            DB_USER: ${{ secrets.DB_USER }}
+            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+            DB_HOST: ${{ secrets.DB_HOST }}
+            DB_PORT: ${{ secrets.DB_PORT }}
             SECRET_KEY: ${{ secrets.SECRET_KEY }}
             ALGORITHM: ${{ secrets.ALGORITHM }}
             ACCESS_TOKEN_EXPIRE_MINS: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINS }}
@@ -14,7 +18,7 @@ jobs:
             postgres:
                 image: postgres
                 env:
-                    POSTGRES_USER: postgres
+                    POSTGRES_USER: ${{ secrets .DB_USER }}
                     POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
                     POSTGRES_DB: ${{ secrets.DB_NAME }}
                 ports:
