@@ -15,4 +15,3 @@ venv.bak/
 app/routers/crud.py
 tests/test_calc.py
 app/calc.py
-.github
