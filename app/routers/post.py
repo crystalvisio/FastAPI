@@ -3,7 +3,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import case, func
 
-from app import models, schemas, utils, oauth2, database
+from app import models, schemas, utils, oauth2, database, decorator
 
 
 # Initialise App Router
@@ -66,6 +66,7 @@ def get_one_post(id:int, db: Session = Depends(database.get_db), curr_user:int =
 
 # Creating...
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
+@decorator.admin_mod_creator # Only logged in users with these roles can access this route
 def create_posts(post:schemas.PostCreate, db:Session = Depends(database.get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
     new_post = models.Post(user_id=curr_user.id, **post.model_dump())
@@ -78,6 +79,7 @@ def create_posts(post:schemas.PostCreate, db:Session = Depends(database.get_db),
 
 # Deleting...
 @router.delete("/{id}")
+@decorator.admin_mod_creator # Only logged in users with these roles can access this route
 def delete_post(id:int, db: Session=Depends(database.get_db), curr_user:int = Depends(oauth2.get_current_user)):
 
     # Query to find the post by its ID
@@ -88,7 +90,7 @@ def delete_post(id:int, db: Session=Depends(database.get_db), curr_user:int = De
     if not post:
         utils.id_error("Post", id)
 
-    # Check if the current user is the owner of the post
+    # Check if the current logged in user is the owner of the post
     if post.user_id != curr_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this post")
 
@@ -100,6 +102,7 @@ def delete_post(id:int, db: Session=Depends(database.get_db), curr_user:int = De
 
 # Updating...
 @router.put("/{id}")
+@decorator.admin_mod_creator # Only logged in users with these roles can access this route
 def edit_posts(id: int, updated_post: schemas.PostBase, db: Session = Depends(database.get_db), curr_user: int = Depends(oauth2.get_current_user)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
 
@@ -108,6 +111,7 @@ def edit_posts(id: int, updated_post: schemas.PostBase, db: Session = Depends(da
     if not post:
         utils.id_error("Post", id)
     
+    # Check if the current logged in user is the owner of the post
     if post.user_id != curr_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to update this post")
 
